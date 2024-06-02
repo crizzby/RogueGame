@@ -28,12 +28,30 @@ public class PlayerMovement : MonoBehaviour
     public Vector2 groundCheckSize = new Vector2(0.5f, 0.05f);
     public LayerMask groundLayer;
 
+    [Header("Gravity")]
+    public float baseGravity = 2;
+    public float maxFallSpeed = 10f;
+    public float fallSpeedMultiplier = 2f;
+
     // Update is called once per frame
     void Update()
     {
         // Set the player's horizontal velocity based on input and movement speed
         rb.velocity = new Vector2(horizontalMovement * moveSpeed, rb.velocity.y);
         GroundCheck();
+        Gravity();
+    }
+    private void Gravity()
+    {
+        if(rb.velocity.y < 0)
+        {
+            rb.gravityScale = baseGravity * fallSpeedMultiplier;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -maxFallSpeed));
+        }
+        else
+        {
+            rb.gravityScale = baseGravity;
+        }
     }
 
     // Method called when the player moves (input action)

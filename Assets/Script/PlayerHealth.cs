@@ -1,53 +1,90 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
 
-// This class handles the player's health and life count.
 public class PlayerHealth : MonoBehaviour
 {
-    // The maximum number of lives the player can have.
-    public int maxLives = 3;
-    // The current number of lives the player has.
-    private int currentLives;
-    //References to the UI Text element that displays the health
-    public Text healthText;
+    // Public variables to set maximum health and reference the health text UI
+    public int maxHealth = 3;
+    public TextMeshProUGUI healthText;
 
-    //Start is called before the first frame update
-    void start()
+    // Private variables to manage current health and invincibility state
+    private int currentHealth;
+    private bool isInvincible = false;
+    private float invincibilityDuration = 1.0f;
+    private float invincibilityTimer = 0.0f;
+
+    // Start is called before the first frame update
+    void Start()
     {
-        //Initialize the currentLives to the maximum lives at the start of the game.
-        currentLives = maxLives;
+        currentHealth = maxHealth;
         UpdateHealthUI();
     }
 
-    //Method to apply damage to the player
+    // Update is called once per frame
+    void Update()
+    {
+        // Handle invincibility timer
+        if (isInvincible)
+        {
+            invincibilityTimer -= Time.deltaTime;
+            if (invincibilityTimer <= 0)
+            {
+                isInvincible = false;
+            }
+        }
+    }
+
+    // Method to apply damage to the player
     public void TakeDamage(int damageAmount)
     {
-        //Reduce the current lives by the damage amount
-        currentLives -= damageAmount;
+        if (isInvincible)
+        {
+            Debug.Log("Player is invincible and cannot take damage.");
+            return;
+        }
 
-        if (currentLives <= 0)
+        currentHealth -= damageAmount;
+        UpdateHealthUI();
+
+        if (currentHealth <= 0)
         {
             Debug.Log("Player Died");
-            GamerOver();
+            GameOver();
         }
-    
+        else
+        {
+            Debug.Log("Player took damage, current health: " + currentHealth);
+        }
+
+        // Apply invincibility after taking damage
+        isInvincible = true;
+        invincibilityTimer = invincibilityDuration;
     }
 
+    // Method to heal the player
+    public void Heal(int healAmount)
+    {
+        currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
+        UpdateHealthUI();
+    }
+
+    // Method to update the health UI
     private void UpdateHealthUI()
     {
-        healthText.text = "Health: " + currentLives;
+        if (healthText != null)
+        {
+            healthText.text = "Health: " + currentHealth;
+        }
+        else
+        {
+            Debug.LogError("Health Text is not assigned!");
+        }
     }
 
-    private void GamerOver()
+    // Method to handle game over
+    private void GameOver()
     {
-        //Restart the current scene
-        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
-    }
-
-    void update()
-    {
-        //Position the health text at the top left corner of the camera's viewpoint
-        Vector3 viewportPoint = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, Camera.main.nearClipPlane));
-        healthText.transform.position = viewportPoint; 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

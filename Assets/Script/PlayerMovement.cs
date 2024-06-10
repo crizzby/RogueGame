@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     public int maxJumps = 2;
     int jumpsRemaining;
 
+
     // Position of the ground check to detect if the player is grounded
     // Size of the ground check box
     // Layer mask to specify which layers count as ground
@@ -33,6 +34,8 @@ public class PlayerMovement : MonoBehaviour
     public float maxFallSpeed = 10f;
     public float fallSpeedMultiplier = 2f;
 
+    
+    //need some code for dash
     // Update is called once per frame
     void Update()
     {

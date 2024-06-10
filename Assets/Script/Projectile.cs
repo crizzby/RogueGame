@@ -6,6 +6,14 @@ public class Projectile : MonoBehaviour
     // The amount of damage the projectile will deal to the player.
     public int damageAmount = 1;
 
+    public float lifeTime = 3f;
+
+    void Start()
+    {
+        Debug.Log("Projectile started with lifetime: " + lifeTime);
+        Destroy(gameObject, lifeTime);
+    }
+
     // This method is called when the projectile collides with another object.
     void OnCollisionEnter2D(Collision2D collision)
     {
